@@ -1,5 +1,7 @@
 # javascript: URIスキーム テストページ
 
+https://harmoniaepic.github.io/javascriptvalidation/
+
 URLBlocklist で `javascript:*` を設定した際の動作検証用サンプルです。
 
 ## 用途
