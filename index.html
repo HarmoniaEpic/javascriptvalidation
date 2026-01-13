@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>javascript: URIスキーム テストページ</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #4a90d9;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #555;
+            margin-top: 30px;
+        }
+        .test-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-item {
+            margin: 15px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #fafafa;
+        }
+        .test-item a, .test-item button {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 5px 0;
+            background: #4a90d9;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .test-item a:hover, .test-item button:hover {
+            background: #357abd;
+        }
+        .code {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-family: "SF Mono", Consolas, monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .label {
+            font-weight: bold;
+            color: #666;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .blocked { background: #ffe0e0; color: #c00; }
+        .not-blocked { background: #e0ffe0; color: #060; }
+        .note {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 12px;
+            border-radius: 4px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        #result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e8f4e8;
+            border-radius: 4px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔒 javascript: URIスキーム テストページ</h1>
+    
+    <div class="note">
+        <strong>⚠️ 検証用ページ</strong><br>
+        URLBlocklistで <code>javascript:*</code> を設定した場合の動作確認用です。<br>
+        各リンクをクリックして、ブロックされるかどうかを確認してください。
+    </div>
+
+    <div class="test-section">
+        <h2>1. javascript: URIスキーム（URLBlocklistの対象）</h2>
+        
+        <div class="test-item">
+            <p class="label">パターン: javascript:void(0)</p>
+            <div class="code">&lt;a href="javascript:void(0)"&gt;リンク&lt;/a&gt;</div>
+            <a href="javascript:void(0)">javascript:void(0) を実行</a>
+            <br><span class="status blocked">URLBlocklistで防げる</span>
+        </div>
+
+        <div class="test-item">
+            <p class="label">パターン: javascript:alert()</p>
+            <div class="code">&lt;a href="javascript:alert('実行されました')"&gt;リンク&lt;/a&gt;</div>
+            <a href="javascript:alert('javascript:alert() が実行されました')">javascript:alert() を実行</a>
+            <br><span class="status blocked">URLBlocklistで防げる</span>
+        </div>
+
+        <div class="test-item">
+            <p class="label">パターン: javascript:print()</p>
+            <div class="code">&lt;a href="javascript:print()"&gt;リンク&lt;/a&gt;</div>
+            <a href="javascript:print()">javascript:print() を実行（印刷ダイアログ）</a>
+            <br><span class="status blocked">URLBlocklistで防げる</span>
+        </div>
+
+        <div class="test-item">
+            <p class="label">パターン: javascript: で複数処理</p>
+            <div class="code">&lt;a href="javascript:document.body.style.background='yellow';void(0)"&gt;リンク&lt;/a&gt;</div>
+            <a href="javascript:document.body.style.background='#fffacd';void(0)">背景色を変更</a>
+            <br><span class="status blocked">URLBlocklistで防げる</span>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. onclick属性（URLBlocklistの対象外）</h2>
+        
+        <div class="test-item">
+            <p class="label">パターン: href="#" + onclick</p>
+            <div class="code">&lt;a href="#" onclick="alert('実行'); return false;"&gt;リンク&lt;/a&gt;</div>
+            <a href="#" onclick="alert('onclick経由で実行されました'); return false;">onclick で alert() を実行</a>
+            <br><span class="status not-blocked">URLBlocklistでは防げない</span>
+        </div>
+
+        <div class="test-item">
+            <p class="label">パターン: button + onclick</p>
+            <div class="code">&lt;button onclick="alert('実行')"&gt;ボタン&lt;/button&gt;</div>
+            <button onclick="alert('button onclick経由で実行されました')">onclick で alert() を実行</button>
+            <br><span class="status not-blocked">URLBlocklistでは防げない</span>
+        </div>
+
+        <div class="test-item">
+            <p class="label">パターン: onclick で DOM操作</p>
+            <div class="code">&lt;a href="#" onclick="document.body.style.background='cyan'; return false;"&gt;リンク&lt;/a&gt;</div>
+            <a href="#" onclick="document.body.style.background='#e0ffff'; return false;">onclick で背景色を変更</a>
+            <br><span class="status not-blocked">URLBlocklistでは防げない</span>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. インラインスクリプト（URLBlocklistの対象外）</h2>
+        
+        <div class="test-item">
+            <p class="label">パターン: script タグ内の関数呼び出し</p>
+            <div class="code">&lt;script&gt;function showMessage() { alert('実行'); }&lt;/script&gt;<br>&lt;button onclick="showMessage()"&gt;ボタン&lt;/button&gt;</div>
+            <button onclick="showMessage()">関数を呼び出し</button>
+            <br><span class="status not-blocked">URLBlocklistでは防げない</span>
+        </div>
+
+        <div class="test-item">
+            <p class="label">パターン: DOM操作でテキスト表示</p>
+            <div class="code">&lt;button onclick="document.getElementById('result').style.display='block'"&gt;ボタン&lt;/button&gt;</div>
+            <button onclick="document.getElementById('result').style.display='block'">結果を表示</button>
+            <div id="result">✅ JavaScriptで表示されました</div>
+            <br><span class="status not-blocked">URLBlocklistでは防げない</span>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>📋 テスト結果まとめ</h2>
+        <table style="width:100%; border-collapse: collapse; font-size: 14px;">
+            <tr style="background: #f0f0f0;">
+                <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">パターン</th>
+                <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">javascript:* でブロック</th>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><code>href="javascript:..."</code></td>
+                <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">✅ 可能</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><code>href="#" onclick="..."</code></td>
+                <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">❌ 不可</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><code>&lt;button onclick="..."&gt;</code></td>
+                <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">❌ 不可</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><code>&lt;script&gt;タグ内</code></td>
+                <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">❌ 不可</td>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        function showMessage() {
+            alert('script タグ内で定義された関数が実行されました');
+        }
+    </script>
+</body>
+</html>
