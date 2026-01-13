@@ -110,10 +110,13 @@
         <h2>1. javascript: URIスキーム（URLBlocklistの対象）</h2>
         
         <div class="test-item">
-            <p class="label">パターン: javascript:void(0)</p>
-            <div class="code">&lt;a href="javascript:void(0)"&gt;リンク&lt;/a&gt;</div>
-            <a href="javascript:void(0)">javascript:void(0) を実行</a>
+            <p class="label">パターン: javascript:void(alert())</p>
+            <div class="code">&lt;a href="javascript:void(alert('実行されました'))"&gt;リンク&lt;/a&gt;</div>
+            <a href="javascript:void(alert('javascript:void(alert()) が実行されました'))">javascript:void(alert()) を実行</a>
             <br><span class="status blocked">URLBlocklistで防げる</span>
+            <p style="font-size:12px; color:#666; margin-top:8px;">
+                ※ 元の <code>javascript:void(0)</code> は「何もしない」コードのため、ブロック確認には不向き
+            </p>
         </div>
 
         <div class="test-item">
